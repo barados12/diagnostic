@@ -2,9 +2,6 @@ workflows:
   android-build:
     name: Build Android APK with Gemini Key
     environment:
-      groups:
-        - api_credentials
-        
       flutter: stable
       vars:
         GEMINI_API_KEY: $GEMINI_API_KEY   # يتم سحبه من متغيرات Codemagic

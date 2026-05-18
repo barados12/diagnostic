@@ -1,0 +1,25 @@
+workflows:
+  android-build:
+    name: Build Android APK with Gemini Key
+    environment:
+      flutter: stable
+      vars:
+        GEMINI_API_KEY: $GEMINI_API_KEY   # يتم سحبه من متغيرات Codemagic
+    scripts:
+      - name: تنظيف المشروع
+        script: flutter clean
+      - name: تثبيت الحزم
+        script: flutter pub get
+      - name: بناء APK مع تمرير مفتاح Gemini
+        script: |
+          flutter build apk --release \
+            --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com   # غيره إلى بريدك
+        notify:
+          success: true
+          failure: true

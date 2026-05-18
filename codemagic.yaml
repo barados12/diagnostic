@@ -1,0 +1,49 @@
+workflows:
+  android-release:
+    name: Android Release Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      android_signing:
+        - keystore_reference
+      groups:
+        - api_keys
+      vars:
+        PACKAGE_NAME: "com.yourcompany.cardiagnosticai"
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+          include: true
+    scripts:
+      - name: Install dependencies
+        script: flutter pub get
+      
+      - name: Analyze code
+        script: flutter analyze
+      
+      - name: Build APK
+        script: |
+          flutter build apk --release \
+            --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY \
+            --build-name=1.0.$PROJECT_BUILD_NUMBER \
+            --build-number=$PROJECT_BUILD_NUMBER
+      
+      - name: Build AAB (Play Store)
+        script: |
+          flutter build appbundle --release \
+            --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY \
+            --build-name=1.0.$PROJECT_BUILD_NUMBER \
+            --build-number=$PROJECT_BUILD_NUMBER
+    artifacts:
+      - build/**/outputs/**/*.apk
+      - build/**/outputs/**/*.aab
+      - build/**/outputs/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - your-email@example.com
+        notify:
+          success: true
+          failure: true

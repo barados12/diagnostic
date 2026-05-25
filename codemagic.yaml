@@ -1,0 +1,20 @@
+workflows:
+  android-build:
+    name: Build Android APK
+    environment:
+      flutter: stable
+      vars:
+        GEMINI_API_KEY: ""   # سيتم تعبئتها من متغيرات البيئة لاحقاً
+    scripts:
+      - name: تنظيف المشروع
+        script: flutter clean
+      - name: تثبيت الحزم
+        script: flutter pub get
+      - name: بناء APK
+        script: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            echo "Warning: GEMINI_API_KEY not set, AI features will be disabled."
+          fi
+          flutter build apk --release --dart-define=GEMINI_API_KEY="$GEMINI_API_KEY"
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
